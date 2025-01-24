@@ -15,6 +15,7 @@ interface FormData {
   date: string;
   details: string;
   category: string;
+  guests: number;
   consent: boolean;
 }
 
@@ -27,6 +28,7 @@ const ReservationForm: React.FC = () => {
     date: "",
     details: "",
     category: "",
+    guests: "",
     consent: false,
   });
 
@@ -72,18 +74,33 @@ const ReservationForm: React.FC = () => {
           return "有効なメールアドレスを入力してください。";
         break;
       case "phone":
-        if (!value) return "電話番号を入力してください。";
+        if (
+          (formData.category === "" || formData.category === "soba") &&
+          !value
+        )
+          return "電話番号を入力してください。";
         if (!phoneRegex.test(value))
           return "有効な電話番号を入力してください。";
         break;
       case "date":
-        if (!value) return "ご来店日を選択してください。";
+        if (
+          (formData.category === "" || formData.category === "soba") &&
+          !value
+        )
+          return "ご来店日を選択してください。";
         break;
       case "details":
         if (!value) return "お問い合わせ内容を入力してください。";
         break;
       case "category":
         if (!value) return "カテゴリーを選択してください。";
+        break;
+      case "guests":
+        if (
+          (formData.category === "" || formData.category === "soba") &&
+          !value
+        )
+          return "ゲストを入力してください。";
         break;
       case "consent":
         if (!value) return "プライバシーポリシーに同意してください。";
@@ -96,12 +113,21 @@ const ReservationForm: React.FC = () => {
 
   const validateForm = (): boolean => {
     const newErrors: Partial<FormData> = {};
+
     Object.entries(formData).forEach(([name, value]) => {
       const error = validateField(name, value);
-      if (error) newErrors[name as keyof FormData] = error;
+      if (error) {
+        newErrors[name as keyof FormData] = error;
+      } else {
+        // Ensure error is cleared when validation passes
+        newErrors[name as keyof FormData] = null;
+      }
     });
+
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+
+    // Return true if there are no errors
+    return Object.values(newErrors).every((error) => error === null);
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -115,6 +141,7 @@ const ReservationForm: React.FC = () => {
         date: "",
         details: "",
         category: "",
+        guests: "",
         consent: false,
       });
       console.log(formData);
@@ -399,31 +426,67 @@ const ReservationForm: React.FC = () => {
             </div>
 
             {/* Visit Date */}
-            <div style={{ marginBottom: "15px" }}>
-              <label
-                style={{
-                  display: "block",
-                  marginBottom: "5px",
-                  color: "#2B2B2B",
-                }}>
-                ご来店日（必須）
-              </label>
-              <input
-                type="date"
-                name="date"
-                value={formData.date}
-                onChange={handleInputChange}
-                style={{
-                  width: "100%",
-                  padding: "10px",
-                  backgroundColor: "#FDF8EF",
-                  border: "1px solid #D8C9A5",
-                  borderRadius: "4px",
-                  fontSize: "14px",
-                }}
-              />
-              {errors.date && <div style={{ color: "red" }}>{errors.date}</div>}
-            </div>
+            {(formData?.category === "" || formData?.category === "soba") && (
+              <div style={{ marginBottom: "15px" }}>
+                <label
+                  style={{
+                    display: "block",
+                    marginBottom: "5px",
+                    color: "#2B2B2B",
+                  }}>
+                  ご来店日（必須）
+                </label>
+                <input
+                  type="date"
+                  name="date"
+                  value={formData.date}
+                  onChange={handleInputChange}
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    backgroundColor: "#FDF8EF",
+                    border: "1px solid #D8C9A5",
+                    borderRadius: "4px",
+                    fontSize: "14px",
+                  }}
+                />
+                {errors.date && (
+                  <div style={{ color: "red" }}>{errors.date}</div>
+                )}
+              </div>
+            )}
+
+            {/* Number of people */}
+            {(formData?.category === "" || formData?.category === "soba") && (
+              <div style={{ marginBottom: "15px" }}>
+                <label
+                  style={{
+                    display: "block",
+                    marginBottom: "5px",
+                    color: "#2B2B2B",
+                  }}>
+                  ご来店人数（ご予約の方は必須）
+                </label>
+                <input
+                  type="number"
+                  name="guests"
+                  value={formData.guests}
+                  onChange={handleInputChange}
+                  placeholder="例: 2名"
+                  style={{
+                    width: "100%",
+                    padding: "10px",
+                    backgroundColor: "#FDF8EF",
+                    border: "1px solid #D8C9A5",
+                    borderRadius: "4px",
+                    fontSize: "14px",
+                  }}
+                />
+                {errors.guests && (
+                  <div style={{ color: "red" }}>{errors.guests}</div>
+                )}
+              </div>
+            )}
 
             {/* Inquiry Details */}
             <div style={{ marginBottom: "15px" }}>
