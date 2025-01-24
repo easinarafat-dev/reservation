@@ -100,7 +100,7 @@ const ReservationForm: React.FC = () => {
           (formData.category === "" || formData.category === "soba") &&
           !value
         )
-          return "ゲストを入力してください。";
+          return "ご来店人数を入力してください";
         break;
       case "consent":
         if (!value) return "プライバシーポリシーに同意してください。";
@@ -473,6 +473,8 @@ const ReservationForm: React.FC = () => {
                   value={formData.guests}
                   onChange={handleInputChange}
                   placeholder="例: 2名"
+                  min="0"
+                  step="1"
                   style={{
                     width: "100%",
                     padding: "10px",
