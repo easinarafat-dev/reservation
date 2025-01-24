@@ -478,7 +478,7 @@ const ReservationForm: React.FC = () => {
                   value={formData.guests}
                   onChange={handleInputChange}
                   placeholder="例: 2名"
-                  min="0"
+                  min="1"
                   step="1"
                   style={{
                     width: "100%",
