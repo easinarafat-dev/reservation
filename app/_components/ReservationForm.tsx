@@ -75,11 +75,15 @@ const ReservationForm: React.FC = () => {
         break;
       case "phone":
         if (
-          (formData.category === "" || formData.category === "soba") &&
+          (formData.category === "" ||
+            formData.category === "soba" ||
+            formData.category === "other") &&
           !value
         )
           return "電話番号を入力してください。";
-        if (!phoneRegex.test(value))
+        if (formData.category === "inquiry" && value && !phoneRegex.test(value))
+          return "有効な電話番号を入力してください。"; // Validate if value is entered
+        if (formData.category === "other" && !phoneRegex.test(value))
           return "有効な電話番号を入力してください。";
         break;
       case "date":
@@ -183,7 +187,6 @@ const ReservationForm: React.FC = () => {
           }}>
           ご予約・お問い合わせ
         </h1>
-
         <form onSubmit={handleSubmit}>
           <div
             style={{
@@ -403,7 +406,9 @@ const ReservationForm: React.FC = () => {
                   marginBottom: "5px",
                   color: "#2B2B2B",
                 }}>
-                電話番号（必須）
+                {formData?.category === "inquiry"
+                  ? "電話番号（任意）"
+                  : "電話番号（必須）"}
               </label>
               <input
                 type="tel"
